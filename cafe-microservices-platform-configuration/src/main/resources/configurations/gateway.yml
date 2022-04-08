@@ -1,0 +1,65 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${REGISTRY_HOST:localhost}:${REGISTRY_PORT:8761}/eureka/
+  fetch-registry: true
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 70000
+
+ribbon:
+  ReadTimeout: 30000
+  ConnectTimeout: 30000
+
+zuul:
+  ignoredServices: '*'
+  host:
+    connect-timeout-millis: 20000
+    socket-timeout-millis: 20000
+
+  routes:
+    account:
+      path: /account/**
+      serviceId: account
+      stripPrefix: false
+      sensitiveHeaders: "*"
+      #      url 参数是直接写死转发
+      url: http://localhost:8401
+
+    products:
+      path: /products/**
+      serviceId: warehouse
+      stripPrefix: false
+      sensitiveHeaders: "*"
+      url: http://localhost:8501
+
+    payment:
+      path: /payment/**
+      serviceId: payment
+      stripPrefix: false
+      sensitiveHeaders: "*"
+      url: http://localhost:8601
+
+    settlement:
+      path: /settlement/**
+      serviceId: payment
+      stripPrefix: false
+      sensitiveHeaders: "*"
+      url: http://localhost:8601
+
+
+warehouse:
+  ribbon:
+    listOfServers: http://localhost:8501
+
+server:
+  port: ${PORT:8080}
+
+logging:
+  level:
+    root: INFO
